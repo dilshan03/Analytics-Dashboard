@@ -39,31 +39,42 @@ function Home() {
   const totalSkills = new Set(skillPredictions.map((item) => item.skill)).size;
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+    <div className="space-y-8">
+      <section className="rounded-3xl bg-gradient-to-r from-slate-900 via-blue-900 to-slate-800 p-8 text-white shadow-lg">
+        <p className="text-sm uppercase tracking-[0.2em] text-blue-200">
+          Career Intelligence Dashboard
+        </p>
+        <h1 className="mt-3 text-4xl font-bold leading-tight">
+          Predict the future of jobs and skills with smart analytics
+        </h1>
+        <p className="mt-4 max-w-2xl text-sm text-slate-200">
+          Explore job growth, skill demand, and the evolution of professional roles
+          through a modern forecasting dashboard.
+        </p>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard
           title="Total Roles"
           value={totalRoles}
-          subtitle="Roles tracked in the system"
+          subtitle="Tracked role categories"
         />
         <SummaryCard
           title="Total Skills"
           value={totalSkills}
-          subtitle="Skills analyzed from data"
+          subtitle="Skills included in analytics"
         />
         <SummaryCard
           title="Top Predicted Job"
           value={topJob ? topJob.role : "N/A"}
-          subtitle={topJob ? `Demand: ${topJob.predictedDemand}` : "No data"}
+          subtitle={topJob ? `Forecast demand: ${topJob.predictedDemand}` : "No data"}
         />
         <SummaryCard
           title="Top Predicted Skill"
           value={topSkill ? topSkill.skill : "N/A"}
-          subtitle={topSkill ? `Demand: ${topSkill.predictedDemand}` : "No data"}
+          subtitle={topSkill ? `Forecast demand: ${topSkill.predictedDemand}` : "No data"}
         />
-      </div>
+      </section>
     </div>
   );
 }

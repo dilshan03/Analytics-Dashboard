@@ -4,19 +4,24 @@ function Sidebar() {
   const location = useLocation();
 
   const linkClass = (path) =>
-    `rounded-xl px-4 py-3 transition ${
+    `group flex items-center rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
       location.pathname === path
-        ? "bg-blue-600 text-white"
-        : "text-gray-300 hover:bg-slate-800 hover:text-white"
+        ? "bg-white text-slate-900 shadow-sm"
+        : "text-slate-300 hover:bg-slate-800 hover:text-white"
     }`;
 
   return (
-    <div className="w-72 min-h-screen bg-slate-900 p-5">
-      <h1 className="text-2xl font-bold text-white mb-8">Future Jobs</h1>
+    <aside className="w-72 min-h-screen bg-slate-950 px-5 py-6">
+      <div className="mb-10">
+        <h1 className="text-2xl font-bold text-white">Future Jobs AI</h1>
+        <p className="mt-2 text-sm text-slate-400">
+          Forecast roles, skills, and career trends
+        </p>
+      </div>
 
-      <nav className="flex flex-col gap-3">
+      <nav className="space-y-3">
         <Link to="/" className={linkClass("/")}>
-          Dashboard
+          Dashboard Overview
         </Link>
         <Link to="/jobs" className={linkClass("/jobs")}>
           Job Prediction
@@ -28,7 +33,14 @@ function Sidebar() {
           Role Evolution
         </Link>
       </nav>
-    </div>
+
+      <div className="mt-10 rounded-3xl border border-slate-800 bg-slate-900 p-5">
+        <p className="text-sm font-semibold text-white">Insight Panel</p>
+        <p className="mt-2 text-sm text-slate-400">
+          Track fast-growing careers and discover future-ready skills.
+        </p>
+      </div>
+    </aside>
   );
 }
 
