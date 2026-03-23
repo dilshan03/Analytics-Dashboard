@@ -3,6 +3,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
+const jobRoutes = require("./routes/jobRoutes");
+const skillRoutes = require("./routes/skillRoutes");
+const roleEvolutionRoutes = require("./routes/roleEvolutionRoutes");
+
 dotenv.config();
 connectDB();
 
@@ -14,6 +18,10 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+app.use("/api/jobs", jobRoutes);
+app.use("/api/skills", skillRoutes);
+app.use("/api/roles", roleEvolutionRoutes);
 
 const PORT = process.env.PORT || 5000;
 

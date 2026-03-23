@@ -1,15 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 function Sidebar() {
-  return (
-    <div className="w-64 h-screen bg-slate-900 text-white p-5">
-      <h1 className="text-2xl font-bold mb-8">Future Jobs</h1>
+  const location = useLocation();
 
-      <nav className="flex flex-col gap-4">
-        <Link to="/" className="hover:text-cyan-400">Dashboard</Link>
-        <Link to="/jobs" className="hover:text-cyan-400">Job Prediction</Link>
-        <Link to="/skills" className="hover:text-cyan-400">Skill Prediction</Link>
-        <Link to="/roles" className="hover:text-cyan-400">Role Evolution</Link>
+  const linkClass = (path) =>
+    `rounded-xl px-4 py-3 transition ${
+      location.pathname === path
+        ? "bg-blue-600 text-white"
+        : "text-gray-300 hover:bg-slate-800 hover:text-white"
+    }`;
+
+  return (
+    <div className="w-72 min-h-screen bg-slate-900 p-5">
+      <h1 className="text-2xl font-bold text-white mb-8">Future Jobs</h1>
+
+      <nav className="flex flex-col gap-3">
+        <Link to="/" className={linkClass("/")}>
+          Dashboard
+        </Link>
+        <Link to="/jobs" className={linkClass("/jobs")}>
+          Job Prediction
+        </Link>
+        <Link to="/skills" className={linkClass("/skills")}>
+          Skill Prediction
+        </Link>
+        <Link to="/roles" className={linkClass("/roles")}>
+          Role Evolution
+        </Link>
       </nav>
     </div>
   );
