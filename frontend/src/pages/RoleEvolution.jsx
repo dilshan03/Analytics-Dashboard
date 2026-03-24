@@ -1,19 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import API from "../services/api";
 import RoleComparisonCard from "../components/RoleComparisonCard";
 import LoadingSpinner from "../components/LoadingSpinner";
+import FilterSelect from "../components/FilterSelect";
 
 function RoleEvolution() {
+  const [roleRecords, setRoleRecords] = useState([]);
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState("Data Analyst");
+  const [fromYear, setFromYear] = useState("2022");
+  const [toYear, setToYear] = useState("2026");
   const [comparison, setComparison] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchComparison = async (role) => {
+  const fetchComparison = async (role, from, to) => {
     try {
       setLoading(true);
       const response = await API.get(
-        `/api/roles/compare/${encodeURIComponent(role)}?from=2022&to=2026`
+        `/api/roles/compare/${encodeURIComponent(role)}?from=${from}&to=${to}`
       );
       setComparison(response.data);
     } catch (error) {
@@ -28,6 +32,7 @@ function RoleEvolution() {
     const fetchRoles = async () => {
       try {
         const response = await API.get("/api/roles");
+        setRoleRecords(response.data);
         const uniqueRoles = [...new Set(response.data.map((item) => item.role))];
         setRoles(uniqueRoles);
       } catch (error) {
@@ -38,9 +43,19 @@ function RoleEvolution() {
     fetchRoles();
   }, []);
 
+  const availableYears = useMemo(() => {
+    const years = roleRecords
+      .filter((item) => item.role === selectedRole)
+      .map((item) => String(item.year));
+
+    return [...new Set(years)].sort();
+  }, [roleRecords, selectedRole]);
+
   useEffect(() => {
-    fetchComparison(selectedRole);
-  }, [selectedRole]);
+    if (selectedRole && fromYear && toYear) {
+      fetchComparison(selectedRole, fromYear, toYear);
+    }
+  }, [selectedRole, fromYear, toYear]);
 
   return (
     <div className="space-y-8">
@@ -57,20 +72,28 @@ function RoleEvolution() {
       </div>
 
       <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <label className="mb-2 block text-sm font-semibold text-gray-700">
-          Select Role
-        </label>
-        <select
-          value={selectedRole}
-          onChange={(e) => setSelectedRole(e.target.value)}
-          className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none md:w-80"
-        >
-          {roles.map((role, index) => (
-            <option key={index} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <FilterSelect
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            options={roles}
+            placeholder="Select Role"
+          />
+
+          <FilterSelect
+            value={fromYear}
+            onChange={(e) => setFromYear(e.target.value)}
+            options={availableYears}
+            placeholder="From Year"
+          />
+
+          <FilterSelect
+            value={toYear}
+            onChange={(e) => setToYear(e.target.value)}
+            options={availableYears}
+            placeholder="To Year"
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -100,7 +123,7 @@ function RoleEvolution() {
         </div>
       ) : (
         <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-          <p className="text-gray-500">No comparison data found.</p>
+          <p className="text-gray-500">No comparison data found for the selected years.</p>
         </div>
       )}
     </div>

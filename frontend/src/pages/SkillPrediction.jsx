@@ -1,27 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import API from "../services/api";
 import SummaryCard from "../components/SummaryCard";
 import SkillPredictionChart from "../components/SkillPredictionChart";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SearchInput from "../components/SearchInput";
+import FilterSelect from "../components/FilterSelect";
 
 function SkillPrediction() {
   const [predictions, setPredictions] = useState([]);
   const [emergingSkills, setEmergingSkills] = useState([]);
   const [decliningSkills, setDecliningSkills] = useState([]);
+  const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [searchSkill, setSearchSkill] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
   useEffect(() => {
     const fetchSkillData = async () => {
       try {
-        const [predictionsRes, emergingRes, decliningRes] = await Promise.all([
+        const [predictionsRes, emergingRes, decliningRes, skillsRes] = await Promise.all([
           API.get("/api/skills/predictions"),
           API.get("/api/skills/emerging"),
           API.get("/api/skills/declining"),
+          API.get("/api/skills"),
         ]);
 
         setPredictions(predictionsRes.data);
         setEmergingSkills(emergingRes.data);
         setDecliningSkills(decliningRes.data);
+        setSkills(skillsRes.data);
       } catch (error) {
         console.error("Skill data fetch error:", error);
       } finally {
@@ -31,6 +40,30 @@ function SkillPrediction() {
 
     fetchSkillData();
   }, []);
+
+  const categories = [...new Set(skills.map((skill) => skill.category))];
+
+  const filteredPredictions = useMemo(() => {
+    let filtered = [...predictions];
+
+    if (searchSkill) {
+      filtered = filtered.filter((item) =>
+        item.skill.toLowerCase().includes(searchSkill.toLowerCase())
+      );
+    }
+
+    if (selectedCategory) {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    if (sortBy === "growth") {
+      filtered.sort((a, b) => b.growthRate - a.growthRate);
+    } else if (sortBy === "demand") {
+      filtered.sort((a, b) => b.predictedDemand - a.predictedDemand);
+    }
+
+    return filtered;
+  }, [predictions, searchSkill, selectedCategory, sortBy]);
 
   if (loading) return <LoadingSpinner />;
 
@@ -65,14 +98,50 @@ function SkillPrediction() {
         />
       </div>
 
-      <SkillPredictionChart data={predictions} />
-
       <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-5">
-          <h2 className="text-xl font-bold text-gray-900">Predicted Skill Demand Table</h2>
+          <h2 className="text-xl font-bold text-gray-900">Filters & Search</h2>
           <p className="text-sm text-gray-500">
-            Forecasted skill demand based on recent year-over-year trends
+            Narrow results by skill name, category, or forecast priority.
           </p>
+        </div>
+
+        <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
+          <SearchInput
+            value={searchSkill}
+            onChange={(e) => setSearchSkill(e.target.value)}
+            placeholder="Search skill..."
+          />
+
+          <FilterSelect
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            options={categories}
+            placeholder="All Categories"
+          />
+
+          <FilterSelect
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            options={["growth", "demand"]}
+            placeholder="Sort By"
+          />
+        </div>
+      </div>
+
+      <SkillPredictionChart data={filteredPredictions} />
+
+      <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Predicted Skill Demand Table</h2>
+            <p className="text-sm text-gray-500">
+              Forecasted skill demand based on recent year-over-year trends
+            </p>
+          </div>
+          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
+            {filteredPredictions.length} results
+          </span>
         </div>
 
         <div className="overflow-x-auto">
@@ -89,7 +158,7 @@ function SkillPrediction() {
               </tr>
             </thead>
             <tbody>
-              {predictions.map((item, index) => (
+              {filteredPredictions.map((item, index) => (
                 <tr key={index} className="border-b border-gray-100 text-sm">
                   <td className="py-4 font-medium text-gray-900">{item.skill}</td>
                   <td className="py-4 text-gray-600">{item.category}</td>
@@ -108,6 +177,12 @@ function SkillPrediction() {
               ))}
             </tbody>
           </table>
+
+          {filteredPredictions.length === 0 && (
+            <p className="py-6 text-center text-sm text-gray-500">
+              No skill predictions match your filters.
+            </p>
+          )}
         </div>
       </div>
     </div>

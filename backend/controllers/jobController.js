@@ -5,7 +5,23 @@ const Job = require("../models/job");
 // @access  Public
 const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().sort({ year: 1 });
+    const { industry, role, year } = req.query;
+
+    const filter = {};
+
+    if (industry) {
+      filter.industry = industry;
+    }
+
+    if (role) {
+      filter.role = { $regex: role, $options: "i" };
+    }
+
+    if (year) {
+      filter.year = Number(year);
+    }
+
+    const jobs = await Job.find(filter).sort({ year: 1 });
     res.json(jobs);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch jobs" });

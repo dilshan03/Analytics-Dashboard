@@ -5,7 +5,23 @@ const Skill = require("../models/Skills");
 // @access  Public
 const getAllSkills = async (req, res) => {
   try {
-    const skills = await Skill.find().sort({ year: 1 });
+    const { category, skill, year } = req.query;
+
+    const filter = {};
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (skill) {
+      filter.skill = { $regex: skill, $options: "i" };
+    }
+
+    if (year) {
+      filter.year = Number(year);
+    }
+
+    const skills = await Skill.find(filter).sort({ year: 1 });
     res.json(skills);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch skills" });
