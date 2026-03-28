@@ -5,7 +5,7 @@ function DashboardLayout({ children }) {
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
       <Sidebar />
-      <div className="flex-1">
+      <div className="ml-72 flex-1 min-w-0">
         <Topbar />
         <main className="p-6 md:p-8">{children}</main>
       </div>

@@ -1,0 +1,744 @@
+{
+  "jobs": [
+    {
+      "role": "Data Scientist",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 600,
+      "salaryMin": 1200,
+      "salaryMax": 3200,
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL"
+      ]
+    },
+    {
+      "role": "Data Scientist",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 1060,
+      "salaryMin": 1260,
+      "salaryMax": 3360,
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL"
+      ]
+    },
+    {
+      "role": "Data Scientist",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 1600,
+      "salaryMin": 1323,
+      "salaryMax": 3528,
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL",
+        "Statistics"
+      ]
+    },
+    {
+      "role": "Data Scientist",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 1930,
+      "salaryMin": 1389,
+      "salaryMax": 3704,
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL",
+        "Statistics"
+      ]
+    },
+    {
+      "role": "Data Scientist",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 2460,
+      "salaryMin": 1459,
+      "salaryMax": 3890,
+      "skills": [
+        "Python",
+        "Machine Learning",
+        "SQL",
+        "Statistics"
+      ]
+    },
+    {
+      "role": "ML Engineer",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 210,
+      "salaryMin": 1500,
+      "salaryMax": 4000,
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "PyTorch"
+      ]
+    },
+    {
+      "role": "ML Engineer",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 370,
+      "salaryMin": 1575,
+      "salaryMax": 4200,
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "PyTorch"
+      ]
+    },
+    {
+      "role": "ML Engineer",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 560,
+      "salaryMin": 1654,
+      "salaryMax": 4410,
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "MLOps"
+      ]
+    },
+    {
+      "role": "ML Engineer",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 670,
+      "salaryMin": 1736,
+      "salaryMax": 4631,
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "MLOps"
+      ]
+    },
+    {
+      "role": "ML Engineer",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 860,
+      "salaryMin": 1823,
+      "salaryMax": 4862,
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "PyTorch",
+        "MLOps"
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 14070,
+      "salaryMin": 900,
+      "salaryMax": 3000,
+      "skills": [
+        "JavaScript",
+        "Python",
+        "SQL"
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 14600,
+      "salaryMin": 945,
+      "salaryMax": 3150,
+      "skills": [
+        "JavaScript",
+        "Python",
+        "SQL"
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 15350,
+      "salaryMin": 992,
+      "salaryMax": 3308,
+      "skills": [
+        "JavaScript",
+        "Python",
+        "SQL",
+        "Git"
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 16570,
+      "salaryMin": 1042,
+      "salaryMax": 3473,
+      "skills": [
+        "JavaScript",
+        "Python",
+        "SQL",
+        "Git"
+      ]
+    },
+    {
+      "role": "Software Developer",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 17200,
+      "salaryMin": 1094,
+      "salaryMax": 3647,
+      "skills": [
+        "JavaScript",
+        "Python",
+        "SQL",
+        "Git"
+      ]
+    },
+    {
+      "role": "DevOps Engineer",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 1410,
+      "salaryMin": 1300,
+      "salaryMax": 3500,
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD"
+      ]
+    },
+    {
+      "role": "DevOps Engineer",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 1460,
+      "salaryMin": 1365,
+      "salaryMax": 3675,
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD"
+      ]
+    },
+    {
+      "role": "DevOps Engineer",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 1540,
+      "salaryMin": 1433,
+      "salaryMax": 3859,
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "Python"
+      ]
+    },
+    {
+      "role": "DevOps Engineer",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 1660,
+      "salaryMin": 1505,
+      "salaryMax": 4052,
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "Python"
+      ]
+    },
+    {
+      "role": "DevOps Engineer",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 1720,
+      "salaryMin": 1580,
+      "salaryMax": 4254,
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "Python"
+      ]
+    },
+    {
+      "role": "Cloud Architect",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 1620,
+      "salaryMin": 1800,
+      "salaryMax": 4500,
+      "skills": [
+        "AWS",
+        "Azure",
+        "Kubernetes"
+      ]
+    },
+    {
+      "role": "Cloud Architect",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 1670,
+      "salaryMin": 1890,
+      "salaryMax": 4725,
+      "skills": [
+        "AWS",
+        "Azure",
+        "Kubernetes"
+      ]
+    },
+    {
+      "role": "Cloud Architect",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 1740,
+      "salaryMin": 1985,
+      "salaryMax": 4961,
+      "skills": [
+        "AWS",
+        "Azure",
+        "Kubernetes",
+        "Docker"
+      ]
+    },
+    {
+      "role": "Cloud Architect",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 1780,
+      "salaryMin": 2084,
+      "salaryMax": 5209,
+      "skills": [
+        "AWS",
+        "Azure",
+        "Kubernetes",
+        "Docker"
+      ]
+    },
+    {
+      "role": "Cloud Architect",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 1820,
+      "salaryMin": 2188,
+      "salaryMax": 5470,
+      "skills": [
+        "AWS",
+        "Azure",
+        "Kubernetes",
+        "Docker"
+      ]
+    },
+    {
+      "role": "Data Analyst",
+      "industry": "IT",
+      "year": 2020,
+      "demandCount": 920,
+      "salaryMin": 800,
+      "salaryMax": 2500,
+      "skills": [
+        "SQL",
+        "Excel",
+        "Power BI"
+      ]
+    },
+    {
+      "role": "Data Analyst",
+      "industry": "IT",
+      "year": 2021,
+      "demandCount": 980,
+      "salaryMin": 840,
+      "salaryMax": 2625,
+      "skills": [
+        "SQL",
+        "Excel",
+        "Power BI"
+      ]
+    },
+    {
+      "role": "Data Analyst",
+      "industry": "IT",
+      "year": 2022,
+      "demandCount": 1070,
+      "salaryMin": 882,
+      "salaryMax": 2756,
+      "skills": [
+        "SQL",
+        "Excel",
+        "Power BI",
+        "Python"
+      ]
+    },
+    {
+      "role": "Data Analyst",
+      "industry": "IT",
+      "year": 2023,
+      "demandCount": 1190,
+      "salaryMin": 926,
+      "salaryMax": 2894,
+      "skills": [
+        "SQL",
+        "Excel",
+        "Power BI",
+        "Python"
+      ]
+    },
+    {
+      "role": "Data Analyst",
+      "industry": "IT",
+      "year": 2024,
+      "demandCount": 1330,
+      "salaryMin": 972,
+      "salaryMax": 3039,
+      "skills": [
+        "SQL",
+        "Excel",
+        "Power BI",
+        "Python"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "skill": "Docker",
+      "category": "DevOps",
+      "year": 2020,
+      "demandCount": 3500
+    },
+    {
+      "skill": "Docker",
+      "category": "DevOps",
+      "year": 2021,
+      "demandCount": 4000
+    },
+    {
+      "skill": "Docker",
+      "category": "DevOps",
+      "year": 2022,
+      "demandCount": 4500
+    },
+    {
+      "skill": "Docker",
+      "category": "DevOps",
+      "year": 2023,
+      "demandCount": 5220
+    },
+    {
+      "skill": "Docker",
+      "category": "DevOps",
+      "year": 2024,
+      "demandCount": 5480
+    },
+    {
+      "skill": "Excel",
+      "category": "Analytics",
+      "year": 2020,
+      "demandCount": 4000
+    },
+    {
+      "skill": "Excel",
+      "category": "Analytics",
+      "year": 2021,
+      "demandCount": 3800
+    },
+    {
+      "skill": "Excel",
+      "category": "Analytics",
+      "year": 2022,
+      "demandCount": 3600
+    },
+    {
+      "skill": "Excel",
+      "category": "Analytics",
+      "year": 2023,
+      "demandCount": 3400
+    },
+    {
+      "skill": "Excel",
+      "category": "Analytics",
+      "year": 2024,
+      "demandCount": 3200
+    },
+    {
+      "skill": "Generative AI",
+      "category": "AI",
+      "year": 2020,
+      "demandCount": 300
+    },
+    {
+      "skill": "Generative AI",
+      "category": "AI",
+      "year": 2021,
+      "demandCount": 500
+    },
+    {
+      "skill": "Generative AI",
+      "category": "AI",
+      "year": 2022,
+      "demandCount": 850
+    },
+    {
+      "skill": "Generative AI",
+      "category": "AI",
+      "year": 2023,
+      "demandCount": 2040
+    },
+    {
+      "skill": "Generative AI",
+      "category": "AI",
+      "year": 2024,
+      "demandCount": 4200
+    },
+    {
+      "skill": "JavaScript",
+      "category": "Programming",
+      "year": 2020,
+      "demandCount": 6770
+    },
+    {
+      "skill": "JavaScript",
+      "category": "Programming",
+      "year": 2021,
+      "demandCount": 6490
+    },
+    {
+      "skill": "JavaScript",
+      "category": "Programming",
+      "year": 2022,
+      "demandCount": 6540
+    },
+    {
+      "skill": "JavaScript",
+      "category": "Programming",
+      "year": 2023,
+      "demandCount": 6360
+    },
+    {
+      "skill": "JavaScript",
+      "category": "Programming",
+      "year": 2024,
+      "demandCount": 6230
+    },
+    {
+      "skill": "Kubernetes",
+      "category": "DevOps",
+      "year": 2020,
+      "demandCount": 1500
+    },
+    {
+      "skill": "Kubernetes",
+      "category": "DevOps",
+      "year": 2021,
+      "demandCount": 2000
+    },
+    {
+      "skill": "Kubernetes",
+      "category": "DevOps",
+      "year": 2022,
+      "demandCount": 2800
+    },
+    {
+      "skill": "Kubernetes",
+      "category": "DevOps",
+      "year": 2023,
+      "demandCount": 3230
+    },
+    {
+      "skill": "Kubernetes",
+      "category": "DevOps",
+      "year": 2024,
+      "demandCount": 3510
+    },
+    {
+      "skill": "Machine Learning",
+      "category": "AI",
+      "year": 2020,
+      "demandCount": 2200
+    },
+    {
+      "skill": "Machine Learning",
+      "category": "AI",
+      "year": 2021,
+      "demandCount": 2800
+    },
+    {
+      "skill": "Machine Learning",
+      "category": "AI",
+      "year": 2022,
+      "demandCount": 3250
+    },
+    {
+      "skill": "Machine Learning",
+      "category": "AI",
+      "year": 2023,
+      "demandCount": 3500
+    },
+    {
+      "skill": "Machine Learning",
+      "category": "AI",
+      "year": 2024,
+      "demandCount": 3920
+    },
+    {
+      "skill": "MLOps",
+      "category": "AI",
+      "year": 2020,
+      "demandCount": 500
+    },
+    {
+      "skill": "MLOps",
+      "category": "AI",
+      "year": 2021,
+      "demandCount": 850
+    },
+    {
+      "skill": "MLOps",
+      "category": "AI",
+      "year": 2022,
+      "demandCount": 1420
+    },
+    {
+      "skill": "MLOps",
+      "category": "AI",
+      "year": 2023,
+      "demandCount": 2200
+    },
+    {
+      "skill": "MLOps",
+      "category": "AI",
+      "year": 2024,
+      "demandCount": 3250
+    },
+    {
+      "skill": "Power BI",
+      "category": "Visualization",
+      "year": 2020,
+      "demandCount": 800
+    },
+    {
+      "skill": "Power BI",
+      "category": "Visualization",
+      "year": 2021,
+      "demandCount": 1230
+    },
+    {
+      "skill": "Power BI",
+      "category": "Visualization",
+      "year": 2022,
+      "demandCount": 1610
+    },
+    {
+      "skill": "Power BI",
+      "category": "Visualization",
+      "year": 2023,
+      "demandCount": 2000
+    },
+    {
+      "skill": "Power BI",
+      "category": "Visualization",
+      "year": 2024,
+      "demandCount": 2420
+    },
+    {
+      "skill": "Python",
+      "category": "Programming",
+      "year": 2020,
+      "demandCount": 4410
+    },
+    {
+      "skill": "Python",
+      "category": "Programming",
+      "year": 2021,
+      "demandCount": 4820
+    },
+    {
+      "skill": "Python",
+      "category": "Programming",
+      "year": 2022,
+      "demandCount": 4810
+    },
+    {
+      "skill": "Python",
+      "category": "Programming",
+      "year": 2023,
+      "demandCount": 4930
+    },
+    {
+      "skill": "Python",
+      "category": "Programming",
+      "year": 2024,
+      "demandCount": 5100
+    },
+    {
+      "skill": "SQL",
+      "category": "Database",
+      "year": 2020,
+      "demandCount": 5470
+    },
+    {
+      "skill": "SQL",
+      "category": "Database",
+      "year": 2021,
+      "demandCount": 5040
+    },
+    {
+      "skill": "SQL",
+      "category": "Database",
+      "year": 2022,
+      "demandCount": 4940
+    },
+    {
+      "skill": "SQL",
+      "category": "Database",
+      "year": 2023,
+      "demandCount": 5150
+    },
+    {
+      "skill": "SQL",
+      "category": "Database",
+      "year": 2024,
+      "demandCount": 5140
+    },
+    {
+      "skill": "TypeScript",
+      "category": "Programming",
+      "year": 2020,
+      "demandCount": 2540
+    },
+    {
+      "skill": "TypeScript",
+      "category": "Programming",
+      "year": 2021,
+      "demandCount": 3020
+    },
+    {
+      "skill": "TypeScript",
+      "category": "Programming",
+      "year": 2022,
+      "demandCount": 3480
+    },
+    {
+      "skill": "TypeScript",
+      "category": "Programming",
+      "year": 2023,
+      "demandCount": 3890
+    },
+    {
+      "skill": "TypeScript",
+      "category": "Programming",
+      "year": 2024,
+      "demandCount": 3850
+    }
+  ]
+}

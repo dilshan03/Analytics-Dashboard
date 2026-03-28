@@ -1,235 +1,313 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
-import SummaryCard from "../components/SummaryCard";
-import KpiCard from "../components/KpiCard";
-import SkillPredictionChart from "../components/SkillPredictionChart";
+import MLForecastChart from "../components/MLForecastChart";
+import ConfidenceBadge from "../components/ConfidenceBadge";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SearchInput from "../components/SearchInput";
-import FilterSelect from "../components/FilterSelect";
-import EmptyState from "../components/EmptyState";
-import ErrorState from "../components/ErrorState";
+
+// Direct calls to the Python ML service (avoids Node proxy overhead)
+const ML_DIRECT = "http://127.0.0.1:8000";
+
+function StatBox({ label, value, sub, color = "text-indigo-600" }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{label}</p>
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      {sub && <p className="text-xs text-slate-500">{sub}</p>}
+    </div>
+  );
+}
 
 function SkillPrediction() {
-  const [predictions, setPredictions] = useState([]);
-  const [emergingSkills, setEmergingSkills] = useState([]);
-  const [decliningSkills, setDecliningSkills] = useState([]);
   const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedSkill, setSelectedSkill] = useState("");
+  const [forecastYears, setForecastYears] = useState(5);
+
+  const [skillForecast, setSkillForecast] = useState(null);
+  const [historicalSkills, setHistoricalSkills] = useState([]);
+  const [skillFeatureImportance, setSkillFeatureImportance] = useState([]);
+
+  const [modelInfo, setModelInfo] = useState(null);
+  const [loadingAvailable, setLoadingAvailable] = useState(true);
+  const [loadingForecast, setLoadingForecast] = useState(false);
   const [error, setError] = useState("");
 
-  const [searchSkill, setSearchSkill] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [sortBy, setSortBy] = useState("");
-
+  // ── Load available entities + model info on mount ──────────────────────────
   useEffect(() => {
-    const fetchSkillData = async () => {
+    const init = async () => {
       try {
-        setError("");
-        const [predictionsRes, emergingRes, decliningRes, skillsRes] = await Promise.all([
-          API.get("/api/skills/predictions"),
-          API.get("/api/skills/emerging"),
-          API.get("/api/skills/declining"),
-          API.get("/api/skills"),
+        const [availRes, infoRes, featRes] = await Promise.all([
+          fetch(`${ML_DIRECT}/available`).then((r) => r.json()),
+          fetch(`${ML_DIRECT}/model-info`).then((r) => r.json()),
+          fetch(`${ML_DIRECT}/feature-importance`).then((r) => r.json()),
         ]);
 
-        setPredictions(predictionsRes.data);
-        setEmergingSkills(emergingRes.data);
-        setDecliningSkills(decliningRes.data);
-        setSkills(skillsRes.data);
-      } catch (error) {
-        console.error("Skill data fetch error:", error);
-        setError("Unable to load skill prediction data.");
+        setSkills(availRes.skills || []);
+        setModelInfo({ ...infoRes, serviceOnline: true });
+
+        if (availRes.skills?.length > 0) {
+          setSelectedSkill(availRes.skills[0]);
+        }
+
+        if (featRes?.skills) setSkillFeatureImportance(featRes.skills);
+      } catch (err) {
+        setError("ML service may be offline. Make sure the Python service is running on port 8000.");
       } finally {
-        setLoading(false);
+        setLoadingAvailable(false);
       }
     };
-
-    fetchSkillData();
+    init();
   }, []);
 
-  const categories = [...new Set(skills.map((skill) => skill.category))];
-
-  const filteredPredictions = useMemo(() => {
-    let filtered = [...predictions];
-
-    if (searchSkill) {
-      filtered = filtered.filter((item) =>
-        item.skill.toLowerCase().includes(searchSkill.toLowerCase())
-      );
+  // ── Fetch skill forecast ───────────────────────────────────────────────────
+  const fetchSkillForecast = useCallback(async () => {
+    if (!selectedSkill) return;
+    setLoadingForecast(true);
+    setError("");
+    try {
+      const params = new URLSearchParams({ skill: selectedSkill, years: forecastYears });
+      const [forecastRes, histRes] = await Promise.all([
+        fetch(`${ML_DIRECT}/forecast/skills?${params}`).then((r) => r.json()),
+        API.get("/api/skills", { params: { skill: selectedSkill } }),
+      ]);
+      setSkillForecast(forecastRes);
+      setHistoricalSkills(histRes.data);
+    } catch (err) {
+      setError("Failed to load skill forecast.");
+    } finally {
+      setLoadingForecast(false);
     }
+  }, [selectedSkill, forecastYears]);
 
-    if (selectedCategory) {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
-    }
+  useEffect(() => {
+    if (selectedSkill) fetchSkillForecast();
+  }, [selectedSkill, forecastYears, fetchSkillForecast]);
 
-    if (sortBy === "growth") {
-      filtered.sort((a, b) => b.growthRate - a.growthRate);
-    } else if (sortBy === "demand") {
-      filtered.sort((a, b) => b.predictedDemand - a.predictedDemand);
-    }
+  if (loadingAvailable) return <LoadingSpinner />;
 
-    return filtered;
-  }, [predictions, searchSkill, selectedCategory, sortBy]);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorState message={error} />;
-
-  const topEmerging = emergingSkills[0];
-  const topDeclining = decliningSkills[0];
-  const totalPredictedDemand = filteredPredictions.reduce(
-    (sum, item) => sum + item.predictedDemand,
-    0
-  );
-  const averageGrowth = filteredPredictions.length
-    ? (
-        filteredPredictions.reduce((sum, item) => sum + item.growthRate, 0) /
-        filteredPredictions.length
-      ).toFixed(2)
-    : 0;
-  const highestDemandSkill =
-    filteredPredictions.length > 0
-      ? [...filteredPredictions].sort((a, b) => b.predictedDemand - a.predictedDemand)[0]
+  const entityColor = "#06b6d4";
+  const peakForecast = skillForecast?.predictions
+    ? Math.max(...skillForecast.predictions.map((p) => p.predictedDemand))
+    : null;
+  const lastHistorical = historicalSkills.length > 0 ? historicalSkills[historicalSkills.length - 1].demandCount : null;
+  const lastHistoricalYear = historicalSkills.length > 0 ? historicalSkills[historicalSkills.length - 1].year : 2024;
+  const growthPct =
+    peakForecast && lastHistorical
+      ? (((peakForecast - lastHistorical) / lastHistorical) * 100).toFixed(1)
       : null;
 
   return (
     <div className="space-y-8">
-      <div>
-        <p className="text-sm font-medium uppercase tracking-widest text-purple-600">
-          Skills Intelligence
-        </p>
-        <h1 className="mt-2 text-3xl font-bold text-gray-900">
-          Skill Prediction Dashboard
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Discover future-ready skills, identify emerging technologies, and track
-          declining competencies.
-        </p>
-      </div>
+      {/* ── Header ─────────────────────────────────────────────────────────── */}
+      <div className="rounded-3xl bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 p-8 text-white shadow-xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-purple-300">
+              🤖 ML Forecast Engine
+            </p>
+            <h1 className="mt-2 text-3xl font-bold">
+              Skill Prediction Dashboard
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-slate-300">
+              Random Forest Regressor trained on historical stack data.
+              Forecasts up to 10 years of specific skill evolution and market demand.
+            </p>
+          </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <SummaryCard
-          title="Top Emerging Skill"
-          value={topEmerging ? topEmerging.skill : "N/A"}
-          subtitle={topEmerging ? `${topEmerging.growthRate}% growth` : "No data"}
-        />
-        <SummaryCard
-          title="Top Declining Skill"
-          value={topDeclining ? topDeclining.skill : "N/A"}
-          subtitle={topDeclining ? `${topDeclining.growthRate}% growth` : "No data"}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <KpiCard
-          label="Filtered Results"
-          value={filteredPredictions.length}
-          hint="Skills after applying filters"
-        />
-        <KpiCard
-          label="Total Predicted Demand"
-          value={totalPredictedDemand}
-          hint="Combined forecast demand"
-        />
-        <KpiCard
-          label="Average Growth"
-          value={`${averageGrowth}%`}
-          hint={
-            highestDemandSkill
-              ? `Top demand skill: ${highestDemandSkill.skill}`
-              : "No data available"
-          }
-        />
-      </div>
-
-      <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-5">
-          <h2 className="text-xl font-bold text-gray-900">Filters & Search</h2>
-          <p className="text-sm text-gray-500">
-            Narrow results by skill name, category, or forecast priority.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
-          <SearchInput
-            value={searchSkill}
-            onChange={(e) => setSearchSkill(e.target.value)}
-            placeholder="Search skill..."
-          />
-          <FilterSelect
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            options={categories}
-            placeholder="All Categories"
-          />
-          <FilterSelect
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            options={["growth", "demand"]}
-            placeholder="Sort By"
-          />
+          {modelInfo && (
+            <div className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+              <p className="text-xs font-semibold uppercase tracking-wider text-purple-300">Model Stats</p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-center">
+                <div>
+                  <p className="text-xl font-bold text-white">
+                    {((modelInfo.skill_r2 || 0) * 100).toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-slate-400">R² Score</p>
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-white">{modelInfo.skill_samples || 0}</p>
+                  <p className="text-xs text-slate-400">Samples</p>
+                </div>
+              </div>
+              <div
+                className={`mt-1 rounded-full px-3 py-1 text-center text-xs font-semibold ${
+                  modelInfo.serviceOnline
+                    ? "bg-emerald-500/20 text-emerald-300"
+                    : "bg-amber-500/20 text-amber-300"
+                }`}
+              >
+                {modelInfo.serviceOnline ? "🟢 ML Service Online" : "🟡 Fallback Mode"}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {filteredPredictions.length > 0 ? (
-        <>
-          <SkillPredictionChart data={filteredPredictions} />
+      {/* ── Controls ──────────────────────────────────────────────────────── */}
+      <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-bold text-slate-800">Configure Forecast</h2>
+        <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Skill</label>
+            <select
+              value={selectedSkill}
+              onChange={(e) => setSelectedSkill(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              {skills.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
 
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Forecast Horizon
+            </label>
+            <select
+              value={forecastYears}
+              onChange={(e) => setForecastYears(Number(e.target.value))}
+              className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              {[1, 2, 3, 5, 8, 10].map((y) => (
+                <option key={y} value={y}>{y} Year{y > 1 ? "s" : ""}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {error && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* ── KPI Stats ─────────────────────────────────────────────────────── */}
+      {skillForecast && !loadingForecast && (
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <StatBox
+            label="Current Demand"
+            value={lastHistorical?.toLocaleString() ?? "—"}
+            sub={`At ${lastHistoricalYear}`}
+            color="text-slate-700"
+          />
+          <StatBox
+            label="Peak Forecast"
+            value={peakForecast?.toLocaleString() ?? "—"}
+            sub={`By ${skillForecast.predictions?.at(-1)?.year}`}
+            color="text-indigo-600"
+          />
+          <StatBox
+            label="Projected Growth"
+            value={growthPct !== null ? `${growthPct}%` : "—"}
+            sub={`vs ${lastHistoricalYear}`}
+            color={Number(growthPct) > 0 ? "text-emerald-600" : "text-red-500"}
+          />
+          <StatBox
+            label="Model Confidence"
+            value={skillForecast.predictions?.[0]?.confidence?.toFixed(1) + "%" ?? "—"}
+            sub={skillForecast.source === "ml" ? "Random Forest R²" : "Fallback Model"}
+            color="text-purple-600"
+          />
+        </div>
+      )}
+
+      {/* ── Forecast Chart & Table ────────────────────────────────────────── */}
+      {loadingForecast ? (
+        <LoadingSpinner />
+      ) : (
+        skillForecast && (
+          <div className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+            <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">
-                  Predicted Skill Demand Table
+                <h2 className="text-xl font-bold text-slate-900">
+                  {selectedSkill} Demand Forecast
                 </h2>
-                <p className="text-sm text-gray-500">
-                  Forecasted skill demand based on recent year-over-year trends
+                <p className="text-sm text-slate-500">
+                  Historical actuals + {forecastYears}-year ML projection
                 </p>
               </div>
-              <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600">
-                {filteredPredictions.length} results
-              </span>
+              <ConfidenceBadge
+                confidence={skillForecast.predictions?.[0]?.confidence}
+                source={skillForecast.source}
+              />
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[750px] text-left">
+            <MLForecastChart
+              data={skillForecast.predictions || []}
+              historical={historicalSkills}
+              label={selectedSkill}
+              color={entityColor}
+            />
+
+            <div className="mt-6 overflow-x-auto">
+              <table className="w-full min-w-[500px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200 text-sm text-gray-500">
-                    <th className="py-3 font-semibold">Skill</th>
-                    <th className="py-3 font-semibold">Category</th>
-                    <th className="py-3 font-semibold">Current Year</th>
-                    <th className="py-3 font-semibold">Current Demand</th>
-                    <th className="py-3 font-semibold">Predicted Year</th>
-                    <th className="py-3 font-semibold">Predicted Demand</th>
-                    <th className="py-3 font-semibold">Growth %</th>
+                  <tr className="border-b border-slate-100 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                    <th className="py-3">Year</th>
+                    <th className="py-3">Predicted Demand</th>
+                    <th className="py-3">Confidence</th>
+                    <th className="py-3">vs {lastHistoricalYear}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredPredictions.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-100 text-sm">
-                      <td className="py-4 font-medium text-gray-900">{item.skill}</td>
-                      <td className="py-4 text-gray-600">{item.category}</td>
-                      <td className="py-4 text-gray-600">{item.currentYear}</td>
-                      <td className="py-4 text-gray-600">{item.currentDemand}</td>
-                      <td className="py-4 text-gray-600">{item.predictedYear}</td>
-                      <td className="py-4 font-semibold text-gray-900">
-                        {item.predictedDemand}
-                      </td>
-                      <td className="py-4">
-                        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700">
-                          {item.growthRate}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {(skillForecast.predictions || []).map((row, idx) => {
+                    const diff = lastHistorical
+                      ? (((row.predictedDemand - lastHistorical) / lastHistorical) * 100).toFixed(1)
+                      : null;
+                    return (
+                      <tr key={idx} className="border-b border-slate-50 hover:bg-slate-50/50">
+                        <td className="py-3 font-semibold text-slate-700">{row.year}</td>
+                        <td className="py-3 font-bold text-indigo-700">
+                          {row.predictedDemand.toLocaleString()}
+                        </td>
+                        <td className="py-3">
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                              row.confidence >= 80
+                                ? "bg-emerald-100 text-emerald-700"
+                                : row.confidence >= 50
+                                ? "bg-amber-100 text-amber-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {row.confidence?.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="py-3">
+                          {diff !== null && (
+                            <span
+                              className={`text-xs font-semibold ${
+                                Number(diff) >= 0 ? "text-emerald-600" : "text-red-500"
+                              }`}
+                            >
+                              {Number(diff) >= 0 ? "▲" : "▼"} {Math.abs(diff)}%
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </div>
-        </>
-      ) : (
-        <EmptyState
-          title="No matching skill predictions"
-          message="Try changing your search text, category filter, or sort option."
-        />
+        )
+      )}
+
+      {/* ── AI Insight ─────────────────────────────────────────────── */}
+      {skillForecast && (
+        <div className="rounded-3xl border border-purple-100 bg-gradient-to-r from-purple-50 to-pink-50 p-6 shadow-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-200">
+              💡
+            </div>
+            <h2 className="text-lg font-bold text-purple-900">AI Forecasting Insight</h2>
+          </div>
+          <p className="pl-10 text-slate-700 leading-relaxed">
+            Our predictive model expects the <strong>{selectedSkill}</strong> skill to experience {Number(growthPct) >= 0 ? "an increasing trajectory" : "a decrease in market prioritization"}, resulting in an overall shift of <strong>{Math.abs(growthPct || 0)}%</strong> over the upcoming {forecastYears} years. {Number(growthPct) > 15 ? "This highly positive trend indicates it is a core competency to invest in for future-proofing." : Number(growthPct) > 0 ? "This modest growth suggests it remains a reliable, foundational capability." : "This trend suggests the technological landscape is shifting towards newer or alternative frameworks."}
+          </p>
+        </div>
       )}
     </div>
   );

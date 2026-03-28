@@ -1,4 +1,5 @@
 const Skill = require("../models/Skills");
+const { smartPredict } = require("../utils/predictUtils");
 
 // @desc    Get all skills
 // @route   GET /api/skills
@@ -150,11 +151,14 @@ const getSkillPredictions = async (req, res) => {
       const records = grouped[skill];
 
       if (records.length >= 2) {
-        const prev = records[records.length - 2];
         const current = records[records.length - 1];
+        const prev    = records[records.length - 2];
 
+        // Smart prediction: Weighted Moving Average + Linear Regression
+        const { predictedDemand, confidence, method } = smartPredict(records);
+
+        // Simple growth rate (for reference display only)
         const growthRate = (current.demandCount - prev.demandCount) / prev.demandCount;
-        const predictedDemand = Math.round(current.demandCount * (1 + growthRate));
 
         predictions.push({
           skill,
@@ -164,6 +168,8 @@ const getSkillPredictions = async (req, res) => {
           predictedYear: current.year + 1,
           predictedDemand,
           growthRate: Number((growthRate * 100).toFixed(2)),
+          confidence,
+          method,
         });
       }
     }
