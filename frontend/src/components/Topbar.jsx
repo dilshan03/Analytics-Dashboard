@@ -4,7 +4,7 @@ function Topbar() {
       <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
-            AI-Driven Future Job Trend Platform
+            Future Job Trend Analysis Platform
           </h2>
           <p className="text-sm text-gray-500">
             Modern analytics dashboard for jobs, skills, and role evolution
